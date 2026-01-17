@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const Hero = () => {
 
     const router = useRouter();
-    const handleStart = () => {
+      const handleStart = () => {
         router.push("/mood"); // 👈 webcam page
   };
 
@@ -22,9 +22,9 @@ const Hero = () => {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
                 <button 
                   onClick={handleStart}
-                  className="w-full sm:w-auto px-10 py-4 bg-indigo-800 text-white font-bold rounded-full hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/20"
+                  className="w-full sm:w-auto px-10 py-4  bg-indigo-800 text-white font-bold rounded-full hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/20"
                 >
-                  Start Your Session
+                  START YOUR VIBE
                 </button>
                 </div>
             </div>

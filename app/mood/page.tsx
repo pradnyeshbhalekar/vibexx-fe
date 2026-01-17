@@ -13,7 +13,7 @@ export default function MoodPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        image: base64Image, // Flask expects "image"
+        image: base64Image, 
       }),
     });
 
