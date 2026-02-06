@@ -5,9 +5,10 @@ import Webcam from "../(webcam)/detect-mood/_components/WebcamCapture";
 
 export default function MoodPage() {
   const router = useRouter();
+  const BACKEND_URI = process.env.NEXT_PUBLIC_BACKEND_URI;
 
   async function handleCapture(base64Image: string) {
-    const res = await fetch("http://127.0.0.1:5000/api/detectmood/", {
+    const res = await fetch(`${BACKEND_URI}/api/detectmood/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
