@@ -8,7 +8,7 @@ export default function MoodPage() {
   const BACKEND_URI = process.env.NEXT_PUBLIC_BACKEND_URI;
 
   async function handleCapture(base64Image: string) {
-    const res = await fetch(`${BACKEND_URI}/api/detectmood/`, {
+    const res = await fetch(`${BACKEND_URI}/api/detectmood/gemini`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,6 +24,7 @@ export default function MoodPage() {
     }
 
     const moodResult = await res.json();
+    console.log(moodResult)
 
     // persist for next page
     localStorage.setItem("moodResult", JSON.stringify(moodResult));
