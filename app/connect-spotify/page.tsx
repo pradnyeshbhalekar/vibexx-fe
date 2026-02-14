@@ -49,7 +49,7 @@ export default function ConnectSpotifyPage() {
   const [selected, setSelected] = useState<MoodKey>("calm");
 
   const SpotifyButton = () => {
-  window.location.replace('/api/login');
+  window.location.replace('/login');
 };
 
 
