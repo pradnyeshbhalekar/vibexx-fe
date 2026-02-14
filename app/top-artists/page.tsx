@@ -4,6 +4,22 @@ import { useRouter } from "next/navigation";
 import Navbar from "../_components/navbar";
 import SonicPioneerGrid from "./_components/sonic-pioneer-grid";
 import GenerateBar from "./_components/generate-bar";
+import { useSearchParams } from "next/navigation";
+
+
+export function SaveJWT() {
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("jwt", token);
+      window.history.replaceState({}, "", "/top-artists");
+    }
+  }, []);
+
+  return null;
+}
 
 export type Pioneer = {
   id: string;
@@ -86,6 +102,7 @@ export default function SonicPioneersPage() {
 
   return (
     <div className="min-h-screen bg-[#06070b] text-white">
+      <SaveJWT/>
       <Navbar showLogo />
 
       <main className="mx-auto max-w-6xl px-6 pb-28">
