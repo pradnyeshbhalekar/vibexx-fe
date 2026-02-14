@@ -20,8 +20,8 @@ export default function GenerateBar({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const BACKEND_URL =process.env.NEXT_PUBLIC_BACKEND_URI
 
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
   const handleGenerate = async () => {
     if (!ready || loading) return;
@@ -30,47 +30,35 @@ export default function GenerateBar({
     setError(null);
 
     try {
-      // get mood from localStorage
-      const moodResult = JSON.parse(localStorage.getItem("moodResult") || "{}");
+      const token = localStorage.getItem("jwt");
+      if (!token) throw new Error("Not authenticated");
+
+      const moodResult = JSON.parse(
+        localStorage.getItem("moodResult") || "{}"
+      );
       const mood = moodResult?.mood;
+      if (!mood) throw new Error("Mood not found");
 
-      if (!mood) throw new Error("Mood not found in localStorage");
-
-      // 1) Save selected artists in session
-      const selectRes = await fetch(`${BACKEND_URL}/api/artists/select`, {
+      const res = await fetch(`${BACKEND_URL}/api/playlist/create`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ artist_ids: selectedIds }),
-      });
-
-      const selectData = await selectRes.json();
-
-      if (!selectRes.ok) {
-        throw new Error(selectData?.error || "Failed to save artists");
-      }
-
-
-      const res = await fetch('/api/playlist/create', {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
+          mood,
           limit: 30,
-          mood: mood,
+          selected_artists: selectedIds,
         }),
       });
 
       const data = await res.json();
-      console.log(data)
 
       if (!res.ok) {
         throw new Error(data?.error || "Failed to create playlist");
       }
 
-
       localStorage.setItem("playlistResult", JSON.stringify(data));
-
       onSuccess?.(data);
     } catch (err: any) {
       console.error(err);
