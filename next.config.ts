@@ -1,5 +1,8 @@
-// next.config.js
-module.exports = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+
   async rewrites() {
     return [
       {
@@ -9,3 +12,5 @@ module.exports = {
     ];
   },
 };
+
+export default nextConfig;
