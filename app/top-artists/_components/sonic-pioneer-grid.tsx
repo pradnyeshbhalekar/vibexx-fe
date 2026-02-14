@@ -1,7 +1,7 @@
 "use client";
 
 import SonicPioneerCard from "./sonic-pioneer-card";
-import type { Pioneer } from "../page";
+import type { Pioneer } from "../top-artists-client";
 
 type Props = {
   pioneers: Pioneer[];
