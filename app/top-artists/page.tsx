@@ -15,6 +15,8 @@ const MAX_PICK = 5;
 
 export default function SonicPioneersPage() {
   const router = useRouter();
+  const BACKEND_URL =process.env.NEXT_PUBLIC_BACKEND_URI
+
 
   const [pioneers, setPioneers] = useState<Pioneer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +46,7 @@ export default function SonicPioneersPage() {
         }
 
         const res = await fetch(
-          "https://vibexx-be.onrender.com/api/artists/top-30",
+          `${BACKEND_URL}/api/artists/top-30`,
           {
             headers: {
               Authorization: `Bearer ${jwt}`,

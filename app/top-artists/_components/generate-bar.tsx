@@ -20,6 +20,8 @@ export default function GenerateBar({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const BACKEND_URL =process.env.NEXT_PUBLIC_BACKEND_URI
+
 
   const handleGenerate = async () => {
     if (!ready || loading) return;
@@ -35,7 +37,7 @@ export default function GenerateBar({
       if (!mood) throw new Error("Mood not found in localStorage");
 
       // 1) Save selected artists in session
-      const selectRes = await fetch('/api/artists/select', {
+      const selectRes = await fetch(`${BACKEND_URL}/api/artists/select`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

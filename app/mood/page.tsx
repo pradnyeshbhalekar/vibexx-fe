@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import Webcam from "../(webcam)/detect-mood/_components/WebcamCapture";
 
 export default function MoodPage() {
+  const BACKEND_URL =process.env.NEXT_PUBLIC_BACKEND_URI
   const router = useRouter();
 
   async function handleCapture(base64Image: string) {
-    const res = await fetch('/api/detectmood/gemini', {
+    const res = await fetch(`${BACKEND_URL}/api/detectmood/gemini`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
