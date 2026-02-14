@@ -30,9 +30,11 @@ export default function GenerateBar({
     setError(null);
 
     try {
+      // 🔐 JWT for auth
       const token = localStorage.getItem("jwt");
       if (!token) throw new Error("Not authenticated");
 
+      // 🎭 mood (this is fine to keep in localStorage)
       const moodResult = JSON.parse(
         localStorage.getItem("moodResult") || "{}"
       );
@@ -58,7 +60,7 @@ export default function GenerateBar({
         throw new Error(data?.error || "Failed to create playlist");
       }
 
-      localStorage.setItem("playlistResult", JSON.stringify(data));
+      // ✅ PASS DATA UP. NO localStorage.
       onSuccess?.(data);
     } catch (err: any) {
       console.error(err);
