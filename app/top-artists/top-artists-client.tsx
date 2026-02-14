@@ -86,7 +86,7 @@ export default function SonicPioneersPage() {
 
   return (
     <div className="min-h-screen bg-[#06070b] text-white">
-      <SaveJWT/>
+
       <Navbar showLogo />
 
       <main className="mx-auto max-w-6xl px-6 pb-28">
