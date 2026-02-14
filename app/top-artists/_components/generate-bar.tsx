@@ -28,8 +28,6 @@ export default function GenerateBar({
     setError(null);
 
     try {
-      const backend = process.env.NEXT_PUBLIC_BACKEND_URI;
-
       // get mood from localStorage
       const moodResult = JSON.parse(localStorage.getItem("moodResult") || "{}");
       const mood = moodResult?.mood;
@@ -37,7 +35,7 @@ export default function GenerateBar({
       if (!mood) throw new Error("Mood not found in localStorage");
 
       // 1) Save selected artists in session
-      const selectRes = await fetch(`${backend}/api/artists/select`, {
+      const selectRes = await fetch('/api/artists/select', {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +49,7 @@ export default function GenerateBar({
       }
 
 
-      const res = await fetch(`${backend}/api/playlist/create`, {
+      const res = await fetch('/api/playlist/create', {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

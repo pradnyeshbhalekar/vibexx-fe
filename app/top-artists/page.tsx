@@ -37,9 +37,8 @@ export default function SonicPioneersPage() {
     const fetchPioneers = async () => {
         try{
             setLoading(true)
-            console.log("BACKEND URL:", `${process.env.NEXT_PUBLIC_BACKEND_URI}/api/artists/top-30`);
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/artists/top-30`,{
+            const res = await fetch('/api/artists/top-30',{
             credentials: "include",
             })
             

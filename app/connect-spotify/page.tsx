@@ -47,16 +47,9 @@ interface MoodResult {
 export default function ConnectSpotifyPage() {
   const [moodResult, setMoodResult] = useState<MoodResult | null>(null);
   const [selected, setSelected] = useState<MoodKey>("calm");
-  const BACKEND_URI = process.env.NEXT_PUBLIC_BACKEND_URI;
-
 
   const SpotifyButton = () => {
-  if (!BACKEND_URI) {
-    console.error("NEXT_PUBLIC_BACKEND_URI is missing");
-    return;
-  }
-
-  window.location.replace(`${BACKEND_URI}/login`);
+  window.location.replace('/api/login');
 };
 
 
