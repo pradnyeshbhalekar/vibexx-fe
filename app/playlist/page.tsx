@@ -1,32 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { usePlaylist } from "../context/PlaylistContext";
-import PlaylistCover from "./_components/PlaylistCover";
+import PlaylistView from "./_components/PlaylistView";
 
 export default function PlaylistPage() {
+  const router = useRouter();
   const { playlist } = usePlaylist();
-  console.log(playlist)
 
-  // 🛑 HARD GUARD
-  if (!playlist || !Array.isArray(playlist.tracks)) {
+  useEffect(() => {
+    if (!playlist) {
+      router.replace("/top-artists");
+    }
+  }, [playlist, router]);
+
+  if (!playlist) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        No playlist data found. Please regenerate.
+        Loading playlist…
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <PlaylistCover />
-
-      <div className="space-y-4 mt-10">
-        {playlist.tracks.map((track: any, index: number) => (
-          <div key={track.id || index}>
-            {index + 1}. {track.name}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return <PlaylistView playlist={playlist} />;
 }
