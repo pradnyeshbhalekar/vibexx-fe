@@ -79,7 +79,7 @@ export default function Spectrum() {
   const emotion = EMOTIONS[selected];
 
   return (
-    <section className="w-full bg-black text-white py-28 px-8">
+    <section className="w-full bg-black text-white py-16 md:py-24 px-5 md:px-8">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_1.8fr] gap-24">
         {/* LEFT */}
         <div>
@@ -87,17 +87,32 @@ export default function Spectrum() {
             Emotional Intelligence
           </p>
 
-          <h1 className="text-5xl md:text-6xl font-black tracking-[-0.02em] mb-6">
-            THE SPECTRUM
-          </h1>
+            <h1 className="
+          text-4xl sm:text-5xl md:text-6xl
+          font-black tracking-tight
+          mb-4 md:mb-6
+        ">
+          THE SPECTRUM
+</h1>
 
-          <p className="text-zinc-400 text-base leading-[1.7] max-w-xl font-light">
+          <p className="
+            text-zinc-400
+            text-sm md:text-base
+            leading-relaxed
+            max-w-[36ch] md:max-w-xl
+          ">
             We translate human emotion into sound — reading micro-expressions and
             shaping music that resonates with your current state of mind.
           </p>
 
           {/* PILLS */}
-            <div className="flex gap-6 mt-12 flex-nowrap overflow-x-auto scrollbar-hide">
+            <div className="
+              flex gap-4 md:gap-6
+              mt-8 md:mt-10
+              overflow-x-auto
+              no-scrollbar
+            pb-2
+            ">
             {(Object.keys(EMOTIONS) as MoodKey[]).map((key) => {
                 const active = key === selected;
                 return (
