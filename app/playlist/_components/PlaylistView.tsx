@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import SelectedArtistsStack from "./SelectedArtistsStack";
 import PlaylistCover from "../_components/PlaylistCover";
 
 export default function PlaylistView({ playlist }: { playlist: any }) {
-  const title = playlist.title || "MIDNIGHT ECHOES & MOONLIT MELODIES";
-  const trackCount = playlist.track_count || playlist.tracks?.length || 0;
+  const [showArtists, setShowArtists] = useState(false);
+
+  const title =
+    playlist.playlist_name || "MIDNIGHT ECHOES & MOONLIT MELODIES";
+
+  const trackCount =
+    playlist.track_count || playlist.tracks?.length || 0;
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -27,6 +34,16 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
             <h1 className="text-[52px] leading-[0.95] md:text-[84px] font-extrabold tracking-tight uppercase">
               {title}
             </h1>
+
+            {/* ✅ SELECTED ARTISTS STACK */}
+            {playlist.selected_artists?.length > 0 && (
+              <div className="mt-6 flex justify-center md:justify-start">
+                <SelectedArtistsStack
+                  artists={playlist.selected_artists}
+                  onClick={() => setShowArtists(true)}
+                />
+              </div>
+            )}
 
             {/* Pills */}
             <div className="mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
@@ -54,21 +71,77 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
           </div>
         </div>
 
-        {/* TRACKS */}
-        <div className="mt-10 space-y-4">
-          {playlist.tracks.map((track: any, index: number) => (
+        {/* TRACK LIST */}
+        <div className="mt-12 space-y-4">
+          {playlist.tracks?.map((track: any, index: number) => (
             <a
               key={track.id || index}
               href={track.spotify_url}
               target="_blank"
               rel="noreferrer"
-              className="block px-6 py-5 rounded-[28px] bg-zinc-900/25 border border-zinc-800"
+              className="group block px-6 py-5 rounded-[28px]
+                bg-zinc-900/25 border border-zinc-800
+                hover:bg-zinc-900/40 transition"
             >
-              {index + 1}. {track.name}
+              <div className="flex items-center gap-5">
+                {/* index */}
+                <span className="text-zinc-500 w-6">{index + 1}</span>
+
+                {/* ✅ TRACK IMAGE */}
+                <img
+                  src={track.image || "/placeholder-track.png"}
+                  alt={track.name}
+                  className="w-[54px] h-[54px] rounded-2xl object-cover"
+                />
+
+                {/* details */}
+                <div className="min-w-0">
+                  <p className="font-semibold uppercase truncate">
+                    {track.name}
+                  </p>
+                  <p className="text-xs text-zinc-500 uppercase truncate">
+                    {Array.isArray(track.artists)
+                      ? track.artists.join(", ")
+                      : track.artists}
+                  </p>
+                </div>
+              </div>
             </a>
           ))}
         </div>
       </div>
+
+      {/* ✅ ARTISTS MODAL */}
+      {showArtists && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
+          <div className="bg-zinc-900 rounded-2xl p-6 w-[90%] max-w-md">
+            <h2 className="text-lg font-bold mb-4">Selected Artists</h2>
+
+            <div className="space-y-3">
+              {playlist.selected_artists.map((artist: any) => (
+                <div
+                  key={artist.id}
+                  className="flex items-center gap-4"
+                >
+                  <img
+                    src={artist.image}
+                    alt={artist.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <span>{artist.name}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              className="mt-6 w-full py-3 rounded-full bg-white text-black font-bold"
+              onClick={() => setShowArtists(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
