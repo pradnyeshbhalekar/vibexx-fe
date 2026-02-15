@@ -2,6 +2,7 @@
 
 import SelectedArtistsStack from "./SelectedArtistsStack";
 import PlaylistCover from "../_components/PlaylistCover";
+import Navbar from "@/app/_components/navbar";
 
 type Artist = {
   id: string;
@@ -42,6 +43,7 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
       </div>
 
       <div className="relative px-8 md:px-16 py-12 md:py-16 max-w-7xl mx-auto">
+      <Navbar showLogo/>
         {/* HEADER */}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-14">
           <PlaylistCover />

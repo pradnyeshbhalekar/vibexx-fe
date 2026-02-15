@@ -11,27 +11,26 @@ export default function MoodPage() {
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
   async function handleCapture(base64Image: string) {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/detectmood/gemini`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
-      });
+    const res = await fetch(`${BACKEND_URL}/api/detectmood/gemini`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: base64Image }),
+    });
 
-      if (!res.ok) throw new Error(await res.text());
-
-      const moodResult = await res.json();
-      console.log("MOOD RESULT 👉", moodResult);
-
-      // ✅ store in memory
-      setMood(moodResult);
-
-      // ✅ navigate normally
-      router.push("/connect-spotify");
-    } catch (err) {
-      console.error("Mood detection error:", err);
-      alert("Could not detect mood. Please try again.");
+    if (!res.ok) {
+      throw new Error("Mood detection failed");
     }
+
+    const moodResult = await res.json();
+    console.log("MOOD RESULT 👉", moodResult);
+
+    setMood({
+      emotion: moodResult.emotion,
+      confidence: moodResult.confidence,
+      description: moodResult.description,
+    });
+
+    router.push("/connect-spotify");
   }
 
   return (
