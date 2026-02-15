@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import SelectedArtistsStack from "./SelectedArtistsStack";
 import PlaylistCover from "../_components/PlaylistCover";
 
 type Artist = {
   id: string;
   name: string;
-  image: string;
+  image?: string | null;
 };
 
 type Track = {
@@ -28,10 +27,6 @@ type Playlist = {
 };
 
 export default function PlaylistView({ playlist }: { playlist: Playlist }) {
-  const [showArtists, setShowArtists] = useState(false);
-
-  console.log("PLAYLIST IN UI 👉", playlist);
-
   const title =
     playlist.playlist_name || "MIDNIGHT ECHOES & MOONLIT MELODIES";
 
@@ -60,12 +55,11 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
               {title}
             </h1>
 
-            {/* ✅ SELECTED ARTISTS STACK */}
+            {/* ✅ SELECTED ARTISTS STACK (NO onClick) */}
             {playlist.selected_artists?.length ? (
               <div className="mt-6 flex justify-center md:justify-start">
                 <SelectedArtistsStack
                   artists={playlist.selected_artists}
-                  onClick={() => setShowArtists(true)}
                 />
               </div>
             ) : null}
@@ -111,19 +105,16 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
                 hover:bg-zinc-900/40 transition"
             >
               <div className="flex items-center gap-5">
-                {/* index */}
                 <span className="text-zinc-500 w-6">
                   {index + 1}
                 </span>
 
-                {/* track image */}
                 <img
                   src={track.image || "/placeholder-track.png"}
                   alt={track.name}
                   className="w-[54px] h-[54px] rounded-2xl object-cover"
                 />
 
-                {/* details */}
                 <div className="min-w-0">
                   <p className="font-semibold uppercase truncate">
                     {track.name}
@@ -139,40 +130,6 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
           ))}
         </div>
       </div>
-
-      {/* ✅ ARTISTS MODAL */}
-      {showArtists && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
-          <div className="bg-zinc-900 rounded-2xl p-6 w-[90%] max-w-md">
-            <h2 className="text-lg font-bold mb-4">
-              Selected Artists
-            </h2>
-
-            <div className="space-y-3">
-              {playlist.selected_artists?.map((artist) => (
-                <div
-                  key={artist.id}
-                  className="flex items-center gap-4"
-                >
-                  <img
-                    src={artist.image}
-                    alt={artist.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <span>{artist.name}</span>
-                </div>
-              ))}
-            </div>
-
-            <button
-              className="mt-6 w-full py-3 rounded-full bg-white text-black font-bold"
-              onClick={() => setShowArtists(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
