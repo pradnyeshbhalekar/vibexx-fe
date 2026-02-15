@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "../_components/navbar";
-import SonicPioneerGrid from "./_components/sonic-pioneer-grid";
-import GenerateBar from "./_components/generate-bar";
 import { usePlaylist } from "../context/PlaylistContext";
+import GenerateBar from "./_components/generate-bar";
+import SonicPioneerGrid from "./_components/sonic-pioneer-grid";
 
 export type Pioneer = {
   id: string;
@@ -19,13 +18,13 @@ export default function TopArtistsPage() {
   const router = useRouter();
   const { setPlaylist } = usePlaylist();
 
+  const [artists, setArtists] = useState<Pioneer[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
-  const [pioneers, setPioneers] = useState<Pioneer[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-  // 🔐 Save JWT from URL once
+  // 🔐 Save JWT from callback URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
@@ -39,42 +38,34 @@ export default function TopArtistsPage() {
   // 🎵 Fetch top artists
   useEffect(() => {
     const fetchArtists = async () => {
+      const jwt = localStorage.getItem("jwt");
+      if (!jwt) {
+        router.push("/connect-spotify");
+        return;
+      }
+
       try {
         setLoading(true);
-
-        const jwt = localStorage.getItem("jwt");
-        if (!jwt) {
-          router.push("/connect-spotify");
-          return;
-        }
-
         const res = await fetch(`${BACKEND_URL}/api/artists/top-30`, {
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
         });
 
-        if (!res.ok) throw new Error("Failed to fetch artists");
-
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
 
-        setPioneers(
-          (data.artists || []).map((a: any) => ({
-            id: a.id,
-            name: a.name,
-            image: a.image ?? null,
-          }))
-        );
-      } catch (err) {
-        console.error(err);
-        setPioneers([]);
+        setArtists(data.artists || []);
+      } catch (e) {
+        console.error(e);
+        router.push("/connect-spotify");
       } finally {
         setLoading(false);
       }
     };
 
     fetchArtists();
-  }, [router]);
+  }, [router, BACKEND_URL]);
 
   const togglePick = (id: string) => {
     setSelectedIds((prev) => {
@@ -85,35 +76,22 @@ export default function TopArtistsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#06070b] text-white">
-      <Navbar showLogo />
-
-      <main className="mx-auto max-w-6xl px-6 pb-28">
-        <div className="mt-12 text-center">
-          <h1 className="text-4xl font-extrabold sm:text-6xl">
-            SONIC PIONEERS
-          </h1>
-          <p className="mt-5 text-xs tracking-widest text-white/45">
-            PICK EXACTLY{" "}
-            <span className="text-indigo-300">{MAX_PICK}</span> PIONEERS
-          </p>
-        </div>
-
-        <SonicPioneerGrid
-          loading={loading}
-          pioneers={pioneers}
-          selectedIds={selectedIds}
-          maxPick={MAX_PICK}
-          onTogglePick={togglePick}
-        />
-      </main>
+    <div className="min-h-screen bg-black text-white">
+      <SonicPioneerGrid
+        loading={loading}
+        pioneers={artists}
+        selectedIds={selectedIds}
+        maxPick={MAX_PICK}
+        onTogglePick={togglePick}
+      />
 
       <GenerateBar
         picked={selectedIds.length}
         maxPick={MAX_PICK}
         selectedIds={selectedIds}
-        onSuccess={(playlist) => {
-          setPlaylist(playlist); // ✅ CONTEXT, NOT localStorage
+        onSuccess={(playlistData) => {
+          // ✅ SEND VIA CONTEXT (THIS IS THE KEY)
+          setPlaylist(playlistData);
           router.push("/playlist");
         }}
       />
