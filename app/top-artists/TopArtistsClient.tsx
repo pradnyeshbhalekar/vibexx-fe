@@ -6,6 +6,7 @@ import Navbar from "../_components/navbar";
 import SonicPioneerGrid from "./_components/sonic-pioneer-grid";
 import GenerateBar from "./_components/generate-bar";
 import type { Pioneer } from "./types";
+import { useMood } from "../context/MoodContext";
 
 const MAX_PICK = 5;
 
@@ -13,12 +14,19 @@ export default function TopArtistsClient() {
   const router = useRouter();
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
+  const { mood } = useMood(); // 👈 REQUIRED
   const [pioneers, setPioneers] = useState<Pioneer[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // 🧠 HARD GUARD — no mood, no page
   useEffect(() => {
-    // STEP 1: read token from URL (Spotify redirect)
+    if (!mood) {
+      router.replace("/mood");
+    }
+  }, [mood, router]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tokenFromUrl = params.get("token");
 
@@ -27,14 +35,12 @@ export default function TopArtistsClient() {
       window.history.replaceState({}, "", "/top-artists");
     }
 
-    // STEP 2: read token from storage
     const jwt = localStorage.getItem("jwt");
     if (!jwt) {
       router.replace("/connect-spotify");
       return;
     }
 
-    // STEP 3: fetch artists
     const fetchArtists = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/artists/top-30`, {
@@ -44,7 +50,6 @@ export default function TopArtistsClient() {
         });
 
         const data = await res.json();
-
         if (!res.ok || !Array.isArray(data.artists)) {
           throw new Error("Invalid artist response");
         }
@@ -75,6 +80,9 @@ export default function TopArtistsClient() {
     });
   };
 
+  // ⛔ Prevent render until mood exists
+  if (!mood) return null;
+
   return (
     <div className="min-h-screen bg-[#06070b] text-white">
       <Navbar showLogo />
@@ -93,6 +101,7 @@ export default function TopArtistsClient() {
         picked={selectedIds.length}
         maxPick={MAX_PICK}
         selectedIds={selectedIds}
+        mood={mood} // ✅ THIS WAS MISSING
         onSuccess={() => router.push("/playlist")}
       />
     </div>
