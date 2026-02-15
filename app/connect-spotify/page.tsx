@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Navbar from "../_components/navbar";
 import { AiFillSpotify } from "react-icons/ai";
+import { useMood } from "../context/MoodContext";
 
-export const EMOTIONS = {
+const EMOTIONS = {
   calm: {
     label: "Calm",
-    emoji: "😌",
     image: "/emoji/calm.png",
     accent: "#615FFF",
     bg: "#1B1A33",
@@ -16,7 +17,6 @@ export const EMOTIONS = {
   },
   angry: {
     label: "Angry",
-    emoji: "😡",
     image: "/emoji/angry.png",
     accent: "#EA4E77",
     bg: "#33161E",
@@ -24,7 +24,6 @@ export const EMOTIONS = {
   },
   sad: {
     label: "Sad",
-    emoji: "😔",
     image: "/emoji/sad.png",
     accent: "#4B90E2",
     bg: "#162433",
@@ -32,7 +31,6 @@ export const EMOTIONS = {
   },
   happy: {
     label: "Happy",
-    emoji: "☺️",
     image: "/emoji/happy.png",
     accent: "#FFD800",
     bg: "#332F12",
@@ -42,77 +40,38 @@ export const EMOTIONS = {
 
 type MoodKey = keyof typeof EMOTIONS;
 
-interface MoodResult {
-  emotion: string; // raw FER emotion (neutral, fear, etc.)
-  mood: MoodKey; // mapped app mood (calm, angry, sad, happy)
-  score: number;
-}
-
 export default function ConnectSpotifyPage() {
-  const [moodResult, setMoodResult] = useState<MoodResult | null>(null);
+  const router = useRouter();
+  const { mood, setMood } = useMood();
   const [selected, setSelected] = useState<MoodKey>("calm");
 
-  const SpotifyButton = () => {
-  window.location.replace('/login');
-};
-
-
-  // ✅ 1) Load moodResult once from localStorage
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("moodResult");
-      if (!stored) return;
-
-      const parsed = JSON.parse(stored);
-
-      const moodKey = parsed?.mood;
-
-      if (moodKey && moodKey in EMOTIONS) {
-        setMoodResult(parsed);
-        setSelected(moodKey);
-      } else {
-        // fallback if old format exists (emotion instead of mood)
-        const fallback = parsed?.emotion?.toLowerCase();
-
-        if (fallback && fallback in EMOTIONS) {
-          const fixed = { ...parsed, mood: fallback };
-          setMoodResult(fixed);
-          setSelected(fallback);
-          localStorage.setItem("moodResult", JSON.stringify(fixed));
-        } else {
-          setMoodResult(null);
-          setSelected("calm");
-        }
-      }
-    } catch (err) {
-      console.error("Invalid moodResult in localStorage:", err);
-      setMoodResult(null);
-      setSelected("calm");
+    if (!mood) {
+      router.replace("/mood");
+      return;
     }
-  }, []);
 
-  // ✅ 2) Whenever user changes mood manually, save it back to localStorage
-  useEffect(() => {
-    if (!moodResult) return;
+    setSelected(mood.emotion as MoodKey);
+  }, [mood, router]);
 
-    const updated = {
-      ...moodResult,
-      mood: selected,
-    };
-
-    localStorage.setItem("moodResult", JSON.stringify(updated));
-  }, [selected, moodResult]);
-
-  if (!moodResult) {
+  if (!mood) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        No mood detected.
+        Loading mood…
       </div>
     );
   }
 
   const emotion = EMOTIONS[selected];
-  const confidence = Math.round(moodResult.score * 100);
+  const confidence = Math.round(mood.confidence * 100);
+
+  const handleManualSelect = (key: MoodKey) => {
+    setSelected(key);
+    setMood({
+      ...mood,
+      emotion: key,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -122,7 +81,7 @@ export default function ConnectSpotifyPage() {
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6 }}
           className="w-full max-w-md rounded-[32px]
                      bg-zinc-900/60 border border-zinc-800
                      backdrop-blur-xl p-8 shadow-2xl"
@@ -130,10 +89,10 @@ export default function ConnectSpotifyPage() {
           {/* Icon */}
           <div className="flex justify-center mb-6">
             <div
-              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center"
               style={{ backgroundColor: emotion.bg }}
             >
-              {emotion.emoji}
+              <img src={emotion.image} className="w-10 h-10" />
             </div>
           </div>
 
@@ -149,22 +108,24 @@ export default function ConnectSpotifyPage() {
             {emotion.label}
           </h1>
 
-          {/* Progress */}
+          {/* Confidence */}
           <div className="mb-6">
-            <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
               <motion.div
                 key={selected}
                 initial={{ width: 0 }}
                 animate={{ width: `${confidence}%` }}
                 transition={{ duration: 1.1, ease: "easeInOut" }}
-                className="h-full rounded-full"
+                className="h-full"
                 style={{ backgroundColor: emotion.accent }}
               />
             </div>
 
             <div className="flex justify-between text-xs text-zinc-400 mt-2">
               <span>ANALYSIS PRECISION</span>
-              <span style={{ color: emotion.accent }}>{confidence}%</span>
+              <span style={{ color: emotion.accent }}>
+                {confidence}%
+              </span>
             </div>
           </div>
 
@@ -178,20 +139,18 @@ export default function ConnectSpotifyPage() {
             “{emotion.quote}”
           </motion.p>
 
-          {/* Interactive selector */}
+          {/* ✅ WAIT, I FEEL… */}
           <p className="text-center text-xs tracking-widest text-zinc-500 mb-4">
             WAIT, I FEEL…
           </p>
 
           <div className="flex justify-center gap-4 mb-10">
             {(Object.keys(EMOTIONS) as MoodKey[]).map((key) => {
-              const e = EMOTIONS[key];
               const active = key === selected;
-
               return (
                 <motion.button
                   key={key}
-                  onClick={() => setSelected(key)}
+                  onClick={() => handleManualSelect(key)}
                   whileHover={{ scale: active ? 1.02 : 1.05 }}
                   whileTap={{ scale: 0.97 }}
                   className={`
@@ -207,18 +166,14 @@ export default function ConnectSpotifyPage() {
                       : "inset 0 0 0 1px rgba(255,255,255,0.02)",
                   }}
                 >
-                  <span
+                  <img
+                    src={EMOTIONS[key].image}
+                    alt={EMOTIONS[key].label}
                     className={`
-                      text-5xl transition-all duration-200
-                      ${active ? "" : "grayscale opacity-30 blur-[0.3px]"}
+                      w-10 h-10 transition-all
+                      ${active ? "" : "opacity-30 grayscale"}
                     `}
-                  >
-                    <img
-  src={e.image}
-  alt={e.label}
-  className="w-10 h-10"
-/>
-                  </span>
+                  />
                 </motion.button>
               );
             })}
@@ -226,12 +181,11 @@ export default function ConnectSpotifyPage() {
 
           {/* Spotify CTA */}
           <motion.button
-            onClick={SpotifyButton}
+            onClick={() => window.location.replace("/login")}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             className="w-full h-14 rounded-full bg-[#1DB954]
-                       text-black font-bold tracking-wide
-                       flex items-center justify-center gap-3
+                       text-black font-bold flex items-center justify-center gap-3
                        shadow-xl shadow-green-500/30"
           >
             <AiFillSpotify className="text-2xl" />

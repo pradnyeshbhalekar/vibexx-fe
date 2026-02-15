@@ -1,4 +1,5 @@
 import "./globals.css";
+import { MoodProvider } from "./context/MoodContext";
 import { PlaylistProvider } from "./context/PlaylistContext";
 
 export default function RootLayout({
@@ -9,9 +10,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <PlaylistProvider>
-          {children}
-        </PlaylistProvider>
+        <MoodProvider>
+          <PlaylistProvider>{children}</PlaylistProvider>
+        </MoodProvider>
       </body>
     </html>
   );

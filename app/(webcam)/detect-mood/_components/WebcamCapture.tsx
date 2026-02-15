@@ -34,11 +34,12 @@ export default function Webcam({ onCapture }: WebcamProps) {
     startCamera();
 
     return () => {
-      stream?.getTracks().forEach(t => t.stop());
+      stream?.getTracks().forEach((t) => t.stop());
     };
   }, []);
 
   const capture = () => {
+    if (loading) return;
     if (!videoRef.current || !canvasRef.current) return;
 
     setLoading(true);
@@ -53,11 +54,15 @@ export default function Webcam({ onCapture }: WebcamProps) {
     ctx.drawImage(video, 0, 0);
 
     const image = canvas.toDataURL("image/jpeg", 0.85);
-    onCapture(image);
+
+    // small delay so UI feedback is visible
+    setTimeout(() => {
+      onCapture(image);
+    }, 600);
   };
 
   if (error) {
-    return <p className="text-white">{error}</p>;
+    return <p className="text-red-400 text-sm">{error}</p>;
   }
 
   return (
@@ -67,17 +72,37 @@ export default function Webcam({ onCapture }: WebcamProps) {
         autoPlay
         playsInline
         muted
-        className="w-full rounded-xl"
+        className={`w-full rounded-2xl transition-opacity ${
+          loading ? "opacity-40" : "opacity-100"
+        }`}
       />
 
       <canvas ref={canvasRef} className="hidden" />
 
+      {/* Capture Button */}
       <button
         onClick={capture}
         disabled={loading}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2
-                   w-16 h-16 rounded-full border-4 border-white"
-      />
+        className={`
+          absolute bottom-6 left-1/2 -translate-x-1/2
+          w-20 h-20 rounded-full
+          border-4 border-white
+          flex items-center justify-center
+          transition-all
+          ${loading ? "scale-90 border-zinc-400" : "hover:scale-105"}
+        `}
+      >
+        {loading && (
+          <span className="w-6 h-6 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+        )}
+      </button>
+
+      {/* Loading text */}
+      {loading && (
+        <p className="absolute -bottom-16 w-full text-center text-sm tracking-widest text-zinc-400">
+          ANALYZING YOUR MOOD…
+        </p>
+      )}
     </div>
   );
 }
