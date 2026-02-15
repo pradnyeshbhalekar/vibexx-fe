@@ -3,21 +3,28 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+type Mood = {
+  emotion: string;
+  confidence: number;
+  description: string;
+};
+
 type Props = {
   picked: number;
   maxPick: number;
   selectedIds: string[];
-  onSuccess?: (data: any) => void;
+  mood: Mood; 
+  onSuccess: (playlistData: any) => void;
 };
 
 export default function GenerateBar({
   picked,
   maxPick,
   selectedIds,
+  mood,
   onSuccess,
 }: Props) {
   const ready = picked === maxPick;
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,20 +33,19 @@ export default function GenerateBar({
   const handleGenerate = async () => {
     if (!ready || loading) return;
 
+    if (!mood || !mood.emotion) {
+      setError("Mood not found");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // 🔐 JWT for auth
       const token = localStorage.getItem("jwt");
       if (!token) throw new Error("Not authenticated");
 
-      // 🎭 mood (this is fine to keep in localStorage)
-      const moodResult = JSON.parse(
-        localStorage.getItem("moodResult") || "{}"
-      );
-      const mood = moodResult?.mood;
-      if (!mood) throw new Error("Mood not found");
+      console.log("Generating playlist with mood:", mood);
 
       const res = await fetch(`${BACKEND_URL}/api/playlist/create`, {
         method: "POST",
@@ -48,23 +54,22 @@ export default function GenerateBar({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          mood,
-          limit: 30,
+          mood: mood.emotion,             
+          confidence: mood.confidence,     
           selected_artists: selectedIds,
+          limit: 30,
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         throw new Error(data?.error || "Failed to create playlist");
       }
 
-      // ✅ PASS DATA UP. NO localStorage.
-      onSuccess?.(data);
+      onSuccess(data);
     } catch (err: any) {
       console.error(err);
-      setError(err?.message || "Something went wrong");
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -96,7 +101,7 @@ export default function GenerateBar({
           {loading ? (
             <>
               <span className="h-5 w-5 rounded-full border-2 border-black/30 border-t-black animate-spin" />
-              Generating playlist...
+              Generating playlist…
             </>
           ) : (
             <>Generate Playlist ({picked}/{maxPick})</>

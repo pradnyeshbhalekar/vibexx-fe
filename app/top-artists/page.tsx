@@ -99,6 +99,7 @@ export default function TopArtistsPage() {
         picked={selectedIds.length}
         maxPick={MAX_PICK}
         selectedIds={selectedIds}
+        mood={mood} 
         onSuccess={(playlistData) => {
           setPlaylist(playlistData);
           router.push("/playlist");
