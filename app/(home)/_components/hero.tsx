@@ -10,7 +10,7 @@ const Hero = () => {
   };
 
     return (
-        <div className="min-h-screen flex flex-col items-center text-center py-12 space-y-32 text-zinc-100 bg-zinc-950">
+        <div className="min-h-screen flex flex-col items-center text-center py-12 space-y-32 text-zinc-100 bg-black">
             
                 <div className="space-y-6 max-w-3xl">
                     <div className="inline-block px-4 py-1.5 mb-2 rounded-full bg-indigo-500/10 border border-indigo-500/200 text-indigo-400 text-xs font-bold justify-center uppercase tracking-widest">

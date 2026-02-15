@@ -87,7 +87,12 @@ export default function ConnectSpotifyPage() {
                      backdrop-blur-xl p-8 shadow-2xl"
         >
           {/* Icon */}
-          <div className="flex justify-center mb-6">
+          <div
+  className="
+    grid grid-cols-2 gap-4 mb-10
+    sm:flex sm:justify-center sm:gap-4
+  "
+>
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center"
               style={{ backgroundColor: emotion.bg }}
@@ -149,32 +154,31 @@ export default function ConnectSpotifyPage() {
               const active = key === selected;
               return (
                 <motion.button
-                  key={key}
-                  onClick={() => handleManualSelect(key)}
-                  whileHover={{ scale: active ? 1.02 : 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`
-                    w-20 h-20 rounded-3xl
-                    flex items-center justify-center
-                    border transition-all duration-200
-                    ${active ? "border-[#5A5A5E]" : "border-[#1E1E22]"}
-                  `}
-                  style={{
-                    backgroundColor: "#0F0F12",
-                    boxShadow: active
-                      ? "0 0 0 1px rgba(255,255,255,0.06)"
-                      : "inset 0 0 0 1px rgba(255,255,255,0.02)",
-                  }}
-                >
-                  <img
-                    src={EMOTIONS[key].image}
-                    alt={EMOTIONS[key].label}
-                    className={`
-                      w-10 h-10 transition-all
-                      ${active ? "" : "opacity-30 grayscale"}
-                    `}
-                  />
-                </motion.button>
+  key={key}
+  onClick={() => handleManualSelect(key)}
+  whileTap={{ scale: 0.96 }}
+  className={`
+    h-20 w-full sm:w-20
+    rounded-2xl
+    flex items-center justify-center
+    transition-all
+    ${
+      active
+        ? "bg-zinc-800 ring-2 ring-white/20"
+        : "bg-zinc-900/70 opacity-60"
+    }
+  `}
+>
+  <img
+    src={EMOTIONS[key].image}
+    alt={EMOTIONS[key].label}
+    className={`
+      w-9 h-9
+      transition-all
+      ${active ? "" : "grayscale"}
+    `}
+  />
+</motion.button>
               );
             })}
           </div>

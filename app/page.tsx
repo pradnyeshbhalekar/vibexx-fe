@@ -32,7 +32,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-auto w-full">
+      <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-auto bg-black w-full">
         <Hero/>
         <MoodSpectrum/>
       </main>

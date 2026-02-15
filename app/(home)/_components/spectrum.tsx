@@ -44,10 +44,7 @@ const EMOTIONS: Record<
   },
 };
 
-const AUDIO_PROFILES: Record<
-  MoodKey,
-  { title: string; desc: string }[]
-> = {
+const AUDIO_PROFILES: Record<MoodKey, { title: string; desc: string }[]> = {
   happy: [
     { title: "Upbeat Tempo", desc: "Energetic rhythms with higher BPM." },
     { title: "Major Keys", desc: "Bright harmonies that feel optimistic." },
@@ -79,105 +76,111 @@ export default function Spectrum() {
   const emotion = EMOTIONS[selected];
 
   return (
-    <section className="w-full bg-black text-white py-16 md:py-24 px-5 md:px-8">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_1.8fr] gap-24">
-        {/* LEFT */}
-        <div>
-          <p className="text-[11px] tracking-[0.35em] uppercase text-zinc-500 mb-4">
-            Emotional Intelligence
-          </p>
+    <section className="w-full min-h-screen bg-black text-white overflow-x-hidden">
+      <div
+        className="
+          mx-auto w-full
+          px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20
+          py-16 sm:py-20 md:py-24 lg:py-28
+          pb-24 sm:pb-28 md:pb-32 lg:pb-40
+        "
+      >
+        <div
+          className="
+            grid grid-cols-1
+            lg:grid-cols-[1.1fr_1.9fr]
+            gap-16 lg:gap-24
+            items-start
+          "
+        >
+          {/* LEFT */}
+          <div>
+            <p className="text-[11px] tracking-[0.35em] uppercase text-zinc-500 mb-4">
+              Emotional Intelligence
+            </p>
 
-            <h1 className="
-          text-4xl sm:text-5xl md:text-6xl
-          font-black tracking-tight
-          mb-4 md:mb-6
-        ">
-          THE SPECTRUM
-</h1>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4 md:mb-6">
+              THE SPECTRUM
+            </h1>
 
-          <p className="
-            text-zinc-400
-            text-sm md:text-base
-            leading-relaxed
-            max-w-[36ch] md:max-w-xl
-          ">
-            We translate human emotion into sound — reading micro-expressions and
-            shaping music that resonates with your current state of mind.
-          </p>
+            <p className="text-zinc-400 text-sm md:text-base leading-relaxed max-w-[42ch]">
+              We translate human emotion into sound — reading micro-expressions and
+              shaping music that resonates with your current state of mind.
+            </p>
 
-          {/* PILLS */}
-            <div className="
-              flex gap-4 md:gap-6
-              mt-8 md:mt-10
-              overflow-x-auto
-              no-scrollbar
-            pb-2
-            ">
-            {(Object.keys(EMOTIONS) as MoodKey[]).map((key) => {
+            {/* PILLS */}
+            <div
+              className="
+                mt-8
+                grid grid-cols-2 gap-4
+                sm:flex sm:flex-wrap
+                lg:flex-nowrap lg:gap-6
+              "
+            >
+              {(Object.keys(EMOTIONS) as MoodKey[]).map((key) => {
                 const active = key === selected;
                 return (
-                <button
+                  <button
                     key={key}
                     onClick={() => setSelected(key)}
                     className={`
-                    px-10 py-3 rounded-full
-                    text-sm font-semibold tracking-[0.25em] uppercase
-                    whitespace-nowrap
-                    transition-all duration-200
-                    ${
+                      w-full sm:w-auto
+                      px-8 py-3
+                      rounded-full
+                      text-xs sm:text-sm
+                      font-semibold tracking-[0.25em]
+                      uppercase
+                      transition-all duration-200
+                      ${
                         active
-                        ? "bg-indigo-500 text-white shadow-[0_0_0_2px_rgba(99,102,241,0.55)]"
-                        : "bg-zinc-900 text-zinc-400 border border-white/10 hover:text-white hover:border-white/20"
-                    }
+                          ? "bg-indigo-500 text-white ring-2 ring-indigo-400/40"
+                          : "bg-zinc-900 text-zinc-400 border border-white/10 hover:text-white hover:border-white/20"
+                      }
                     `}
-                >
+                  >
                     {EMOTIONS[key].label}
-                </button>
+                  </button>
                 );
-            })}
+              })}
             </div>
-        </div>
-
-        {/* RIGHT */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* MAIN CARD */}
-          <div className="col-span-2 rounded-[32px] bg-gradient-to-br from-zinc-900/80 to-zinc-900/40 border border-white/5 backdrop-blur-xl p-12 shadow-[0_30px_120px_rgba(0,0,0,0.65)]">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/10 border border-white/10 mb-6">
-              <Image
-                src={emotion.image}
-                alt={emotion.label}
-                width={36}
-                height={36}
-              />
-            </div>
-
-            <h2
-              className="text-5xl font-black tracking-tight mb-5"
-              style={{ color: emotion.accent }}
-            >
-              {emotion.label}
-            </h2>
-
-            <p className="text-zinc-300 text-base leading-relaxed max-w-lg">
-              {emotion.quote}
-            </p>
           </div>
 
-          {/* AUDIO CARDS */}
-          {AUDIO_PROFILES[selected].map((item, i) => (
-            <div
-              key={i}
-              className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 hover:bg-zinc-900/60 hover:border-white/15 transition-all"
-            >
-              <p className="text-xs tracking-[0.25em] uppercase text-zinc-500 mb-3">
-                Audio Profile
-              </p>
-              <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                {item.desc}
+          {/* RIGHT */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+            <div className="col-span-1 md:col-span-2 rounded-2xl md:rounded-[32px] bg-gradient-to-br from-zinc-900/80 to-zinc-900/40 border border-white/5 backdrop-blur-xl p-6 md:p-12 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
+              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center bg-white/10 border border-white/10 mb-5 md:mb-6">
+                <Image src={emotion.image} alt={emotion.label} width={36} height={36} />
+              </div>
+
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 md:mb-5"
+                style={{ color: emotion.accent }}
+              >
+                {emotion.label}
+              </h2>
+
+              <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-lg">
+                {emotion.quote}
               </p>
             </div>
-          ))}
+
+            {AUDIO_PROFILES[selected].map((item, i) => (
+              <div
+                key={i}
+                className="rounded-2xl md:rounded-3xl bg-zinc-900/40 border border-white/5 p-5 md:p-8"
+              >
+                <p className="text-xs tracking-[0.25em] uppercase text-zinc-500 mb-2">
+                  Audio Profile
+                </p>
+                <h3 className="text-base md:text-lg font-semibold mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
