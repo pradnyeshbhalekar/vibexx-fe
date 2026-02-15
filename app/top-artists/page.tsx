@@ -27,14 +27,19 @@ export default function TopArtistsPage() {
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
-  // 🧠 Guard: mood must exist
+  // 🧠 Redirect if mood missing
   useEffect(() => {
     if (!mood) {
       router.replace("/mood");
     }
   }, [mood, router]);
 
-  // 🔐 Save JWT from callback URL
+  // 🔒 HARD STOP for TypeScript
+  if (!mood) {
+    return null;
+  }
+
+  // 🔐 Save JWT
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
@@ -99,7 +104,7 @@ export default function TopArtistsPage() {
         picked={selectedIds.length}
         maxPick={MAX_PICK}
         selectedIds={selectedIds}
-        mood={mood} 
+        mood={mood}
         onSuccess={(playlistData) => {
           setPlaylist(playlistData);
           router.push("/playlist");
