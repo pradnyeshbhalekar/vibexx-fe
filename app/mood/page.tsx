@@ -24,11 +24,14 @@ export default function MoodPage() {
     const moodResult = await res.json();
     console.log("MOOD RESULT 👉", moodResult);
 
-    setMood({
+     const payload = {
       emotion: moodResult.emotion,
       confidence: moodResult.confidence,
       description: moodResult.description,
-    });
+    };
+
+    setMood(payload);
+    sessionStorage.setItem("mood", JSON.stringify(payload));
 
     router.push("/connect-spotify");
   }
