@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePlaylist } from "../context/PlaylistContext";
+import { useMood } from "../context/MoodContext";
+
 import GenerateBar from "./_components/generate-bar";
 import SonicPioneerGrid from "./_components/sonic-pioneer-grid";
 
@@ -16,6 +18,7 @@ const MAX_PICK = 5;
 
 export default function TopArtistsPage() {
   const router = useRouter();
+  const { mood } = useMood();
   const { setPlaylist } = usePlaylist();
 
   const [artists, setArtists] = useState<Pioneer[]>([]);
@@ -23,6 +26,13 @@ export default function TopArtistsPage() {
   const [loading, setLoading] = useState(false);
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
+
+  // 🧠 Guard: mood must exist
+  useEffect(() => {
+    if (!mood) {
+      router.replace("/mood");
+    }
+  }, [mood, router]);
 
   // 🔐 Save JWT from callback URL
   useEffect(() => {
@@ -40,7 +50,7 @@ export default function TopArtistsPage() {
     const fetchArtists = async () => {
       const jwt = localStorage.getItem("jwt");
       if (!jwt) {
-        router.push("/connect-spotify");
+        router.replace("/connect-spotify");
         return;
       }
 
@@ -56,9 +66,9 @@ export default function TopArtistsPage() {
         if (!res.ok) throw new Error(data.error);
 
         setArtists(data.artists || []);
-      } catch (e) {
-        console.error(e);
-        router.push("/connect-spotify");
+      } catch (err) {
+        console.error(err);
+        router.replace("/connect-spotify");
       } finally {
         setLoading(false);
       }
@@ -90,7 +100,6 @@ export default function TopArtistsPage() {
         maxPick={MAX_PICK}
         selectedIds={selectedIds}
         onSuccess={(playlistData) => {
-          // ✅ SEND VIA CONTEXT (THIS IS THE KEY)
           setPlaylist(playlistData);
           router.push("/playlist");
         }}
