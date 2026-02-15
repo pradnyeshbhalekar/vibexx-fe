@@ -1,33 +1,38 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type Mood = {
-  emotion: string;
+  emotion: "calm" | "happy" | "sad" | "angry";
   confidence: number;
   description: string;
 };
 
-const MoodContext = createContext<{
+type MoodContextType = {
   mood: Mood | null;
-  setMood: (m: Mood) => void;
-}>({
-  mood: null,
-  setMood: () => {},
-});
+  setMood: (mood: Mood) => void;
+};
+
+const MoodContext = createContext<MoodContextType | null>(null);
 
 export function MoodProvider({ children }: { children: React.ReactNode }) {
-  const [mood, setMood] = useState<Mood | null>(null);
+  // ✅ LAZY INITIALIZATION (runs once)
+  const [mood, setMoodState] = useState<Mood | null>(() => {
+    if (typeof window === "undefined") return null;
 
-  // ✅ rehydrate once
-  useEffect(() => {
-    if (!mood) {
+    try {
       const stored = sessionStorage.getItem("mood");
-      if (stored) {
-        setMood(JSON.parse(stored));
-      }
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      sessionStorage.removeItem("mood");
+      return null;
     }
-  }, []);
+  });
+
+  const setMood = (m: Mood) => {
+    setMoodState(m);
+    sessionStorage.setItem("mood", JSON.stringify(m));
+  };
 
   return (
     <MoodContext.Provider value={{ mood, setMood }}>
@@ -36,4 +41,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useMood = () => useContext(MoodContext);
+export function useMood() {
+  const ctx = useContext(MoodContext);
+  if (!ctx) {
+    throw new Error("useMood must be used inside MoodProvider");
+  }
+  return ctx;
+}
