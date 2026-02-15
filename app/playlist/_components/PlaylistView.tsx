@@ -4,8 +4,33 @@ import { useState } from "react";
 import SelectedArtistsStack from "./SelectedArtistsStack";
 import PlaylistCover from "../_components/PlaylistCover";
 
-export default function PlaylistView({ playlist }: { playlist: any }) {
+type Artist = {
+  id: string;
+  name: string;
+  image: string;
+};
+
+type Track = {
+  id: string;
+  name: string;
+  image?: string;
+  artists?: string[] | string;
+  spotify_url: string;
+};
+
+type Playlist = {
+  playlist_name: string;
+  mood: string;
+  playlist_url: string;
+  track_count: number;
+  selected_artists?: Artist[];
+  tracks?: Track[];
+};
+
+export default function PlaylistView({ playlist }: { playlist: Playlist }) {
   const [showArtists, setShowArtists] = useState(false);
+
+  console.log("PLAYLIST IN UI 👉", playlist);
 
   const title =
     playlist.playlist_name || "MIDNIGHT ECHOES & MOONLIT MELODIES";
@@ -36,20 +61,22 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
             </h1>
 
             {/* ✅ SELECTED ARTISTS STACK */}
-            {playlist.selected_artists?.length > 0 && (
+            {playlist.selected_artists?.length ? (
               <div className="mt-6 flex justify-center md:justify-start">
                 <SelectedArtistsStack
                   artists={playlist.selected_artists}
                   onClick={() => setShowArtists(true)}
                 />
               </div>
-            )}
+            ) : null}
 
             {/* Pills */}
             <div className="mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
               <span className="px-5 py-2 rounded-full text-xs tracking-widest uppercase bg-zinc-900/60 border border-zinc-800 text-zinc-400">
                 Wavelength:{" "}
-                <span className="text-white">{playlist.mood || "Calm"}</span>
+                <span className="text-white">
+                  {playlist.mood || "Calm"}
+                </span>
               </span>
 
               <span className="px-5 py-2 rounded-full text-xs tracking-widest uppercase bg-zinc-900/60 border border-zinc-800 text-zinc-400">
@@ -73,7 +100,7 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
 
         {/* TRACK LIST */}
         <div className="mt-12 space-y-4">
-          {playlist.tracks?.map((track: any, index: number) => (
+          {playlist.tracks?.map((track, index) => (
             <a
               key={track.id || index}
               href={track.spotify_url}
@@ -85,9 +112,11 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
             >
               <div className="flex items-center gap-5">
                 {/* index */}
-                <span className="text-zinc-500 w-6">{index + 1}</span>
+                <span className="text-zinc-500 w-6">
+                  {index + 1}
+                </span>
 
-                {/* ✅ TRACK IMAGE */}
+                {/* track image */}
                 <img
                   src={track.image || "/placeholder-track.png"}
                   alt={track.name}
@@ -115,10 +144,12 @@ export default function PlaylistView({ playlist }: { playlist: any }) {
       {showArtists && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
           <div className="bg-zinc-900 rounded-2xl p-6 w-[90%] max-w-md">
-            <h2 className="text-lg font-bold mb-4">Selected Artists</h2>
+            <h2 className="text-lg font-bold mb-4">
+              Selected Artists
+            </h2>
 
             <div className="space-y-3">
-              {playlist.selected_artists.map((artist: any) => (
+              {playlist.selected_artists?.map((artist) => (
                 <div
                   key={artist.id}
                   className="flex items-center gap-4"
