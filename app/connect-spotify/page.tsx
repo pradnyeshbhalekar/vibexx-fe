@@ -5,10 +5,11 @@ import { motion } from "framer-motion";
 import Navbar from "../_components/navbar";
 import { AiFillSpotify } from "react-icons/ai";
 
-const EMOTIONS = {
+export const EMOTIONS = {
   calm: {
     label: "Calm",
     emoji: "😌",
+    image: "/emoji/calm.png",
     accent: "#615FFF",
     bg: "#1B1A33",
     quote: "Centered, steady, and at peace.",
@@ -16,6 +17,7 @@ const EMOTIONS = {
   angry: {
     label: "Angry",
     emoji: "😡",
+    image: "/emoji/angry.png",
     accent: "#EA4E77",
     bg: "#33161E",
     quote: "Intense, charged, and ready to burst.",
@@ -23,6 +25,7 @@ const EMOTIONS = {
   sad: {
     label: "Sad",
     emoji: "😔",
+    image: "/emoji/sad.png",
     accent: "#4B90E2",
     bg: "#162433",
     quote: "Quiet, heavy, and reflective.",
@@ -30,6 +33,7 @@ const EMOTIONS = {
   happy: {
     label: "Happy",
     emoji: "☺️",
+    image: "/emoji/happy.png",
     accent: "#FFD800",
     bg: "#332F12",
     quote: "Light, upbeat, and content.",
@@ -209,7 +213,11 @@ export default function ConnectSpotifyPage() {
                       ${active ? "" : "grayscale opacity-30 blur-[0.3px]"}
                     `}
                   >
-                    {e.emoji}
+                    <img
+  src={e.image}
+  alt={e.label}
+  className="w-10 h-10"
+/>
                   </span>
                 </motion.button>
               );
