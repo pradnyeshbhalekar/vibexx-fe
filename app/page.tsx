@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./_components/navbar";
 import Logo from "./_components/logo";
 import Hero from "./(home)/_components/hero";
+import MoodSpectrum from "./(home)/_components/spectrum";
 
 export default function Home() {
   const [showNavbarLogo, setShowNavbarLogo] = useState(false);
@@ -33,6 +34,7 @@ export default function Home() {
 
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-auto w-full">
         <Hero/>
+        <MoodSpectrum/>
       </main>
     </LayoutGroup>
   );
